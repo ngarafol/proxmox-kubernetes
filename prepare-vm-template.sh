@@ -1,3 +1,20 @@
+#!/bin/bash
+
+# Parse command line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --vmid) VMID="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+if [[ -z $VMID ]]; then
+    echo "VMID is required. Please provide a valid VMID using the --vmid option."
+    exit 1
+fi
+
+
 # Fetch a cloud-init image of Ubuntu
 wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 
@@ -9,15 +26,15 @@ apt install libguestfs-tools -y
 virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
 
 # Create a base VM with the right config for you
-# Lable it with ID 999 so that the template doesn't show up on the top of your list
-qm create 999 --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
-qm importdisk 999 focal-server-cloudimg-amd64.img local-lvm
-qm set 999 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-999-disk-0
-qm set 999 --boot c --bootdisk scsi0
-qm set 999 --ide2 local-lvm:cloudinit
-qm set 999 --serial0 socket --vga serial0
-qm set 999 --agent enabled=1
+# Lable it with a unique and high ID so that the template doesn't show up on the top of your list
+qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
+qm importdisk $VMID focal-server-cloudimg-amd64.img local-lvm
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$VMID-disk-0
+qm set $VMID --boot c --bootdisk scsi0
+qm set $VMID --ide2 local-lvm:cloudinit
+qm set $VMID --serial0 socket --vga serial0
+qm set $VMID --agent enabled=1
 
 # Make it a template
-qm template 999
+qm template $VMID
 

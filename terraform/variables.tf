@@ -36,6 +36,7 @@ variable "ssh_key" {
   default     = ""
 }
 
+# Main node vars
 variable "target_node_main" {
   description = "The target proxmox node to create the main k8s node on"
   type        = string
@@ -46,6 +47,17 @@ variable "ip_net_main" {
   type        = string
 }
 
+
+# Agent vars
+variable "target_node_agent" {
+  description = "The target proxmox node to create the main k8s node on"
+  type        = string
+}
+
+variable "ip_net_agent" {
+  description = "Main VM's static ip and subnet of the network"
+  type        = string
+}
 
 
 

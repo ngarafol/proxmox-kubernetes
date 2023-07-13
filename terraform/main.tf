@@ -15,7 +15,7 @@ provider "proxmox" {
   pm_tls_insecure     = true
 }
 
-# Create VM to host main node
+# Create VM for main k8s node
 resource "proxmox_vm_qemu" "kube-server" {
   count       = 1
   name        = "kube-server-0${count.index + 1}"
@@ -25,7 +25,7 @@ resource "proxmox_vm_qemu" "kube-server" {
   clone       = var.vm_template_name
   agent       = 1
   os_type     = "cloud-init"
-  cores       = 1
+  cores       = 2
   sockets     = 1
   cpu         = "host"
   memory      = 2048
@@ -51,7 +51,50 @@ resource "proxmox_vm_qemu" "kube-server" {
     ]
   }
 
-  ipconfig0 = "ip=${var.ip_net},gw=${var.gateway}"
+  ipconfig0 = "ip=${var.ip_net_main},gw=${var.gateway}"
+
+  sshkeys = <<EOF
+  ${var.ssh_key}
+  EOF
+}
+
+# Create VMs for agent k8s nodes
+resource "proxmox_vm_qemu" "kube-agent" {
+  count       = 2
+  name        = "kube-agent-0${count.index + 1}"
+  target_node = var.target_node_agent
+  vmid        = "80${count.index + 1}"
+  clone       = var.vm_template_name
+  agent       = 1
+  os_type     = "cloud-init"
+  cores       = 1
+  sockets     = 1
+  cpu         = "host"
+  memory      = 1500
+  scsihw      = "virtio-scsi-pci"
+  bootdisk    = "scsi0"
+
+  disk {
+    slot     = 0
+    size     = "10G"
+    type     = "scsi"
+    storage  = var.file_system == "zfs" ? "local-zfs" : "local-lvm"
+    iothread = 0
+  }
+
+  network {
+    model  = "virtio"
+    bridge = "vmbr0"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      network,
+    ]
+  }
+
+  # Create IPs in increasing order of the given agent IP
+  ipconfig0 = "ip=${cidrhost(var.ip_net_agent, count.index)}/24,gw=${var.gateway}"
 
   sshkeys = <<EOF
   ${var.ssh_key}

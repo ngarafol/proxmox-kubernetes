@@ -1,14 +1,14 @@
 # proxmox-homelab-kube
 
-- A complete package built using shell, Terrafrom and Ansible to create a fully running k8s cluster in a proxmox installation.
+- A complete package built using shell, Terrafrom and Ansible to automate the creation of a complete Kubernetes cluster in a proxmox installation.
 - Most values default to the default installation settings of proxmox, the comments in the files should help you change any if you need to.
 - Has been tested with proxmox 7.x and 8.x.
 
 ## Steps:
 
 #### Create a VM template
-- SSH into your proxmox node
-- Run  `wget -O template.sh https://raw.githubusercontent.com/ash0ne/proxmox-homelab-kube/main/prepare-vm-template.sh && . template.sh`
+- SSH into your each of your proxmox nodes as root and run the below command to create a VM template in each proxmox node.
+- Run  `wget -O template.sh https://raw.githubusercontent.com/ash0ne/proxmox-homelab-kube/main/prepare-vm-template.sh && . template.sh --vmid <vm-id>`
 
 #### Create an API key and add permissions
 - Click on Datacenter -> Permissions -> API Tokens
