@@ -64,6 +64,7 @@ resource "proxmox_vm_qemu" "kube-agent" {
   name        = "kube-agent-0${count.index + 1}"
   target_node = var.target_node_agent
   vmid        = "80${count.index + 1}"
+  qemu_os     = "other"
   clone       = var.vm_template_name
   agent       = 1
   os_type     = "cloud-init"
