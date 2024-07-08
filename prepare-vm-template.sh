@@ -16,7 +16,7 @@ fi
 
 
 # Fetch a cloud-init image of Ubuntu
-wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+wget -c https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 
 # If you have multiple nodes and run a proxmox cluster, try and run this on the node with the maximum storage
 # If you are not on a proxmox subscription, disable any enterprise repos( https://enterprise.proxmox.com/**) before running this script
@@ -29,9 +29,9 @@ virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
 # Lable it with a unique and high ID so that the template doesn't show up on the top of your list
 qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
 qm importdisk $VMID focal-server-cloudimg-amd64.img local
-qm set $VMID --scsihw virtio-scsi-pci --scsi0 local:vm-$VMID-disk-0
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 proxmox-shared:vm-$VMID-disk-0
 qm set $VMID --boot c --bootdisk scsi0
-qm set $VMID --ide2 local:cloudinit
+qm set $VMID --ide2 proxmox-shared:cloudinit
 qm set $VMID --serial0 socket --vga serial0
 qm set $VMID --agent enabled=1
 
