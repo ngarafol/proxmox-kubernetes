@@ -28,10 +28,10 @@ virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
 # Create a base VM with the right config for you
 # Lable it with a unique and high ID so that the template doesn't show up on the top of your list
 qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
-qm importdisk $VMID focal-server-cloudimg-amd64.img local-lvm
-qm set $VMID --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$VMID-disk-0
+qm importdisk $VMID focal-server-cloudimg-amd64.img local
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 local:vm-$VMID-disk-0
 qm set $VMID --boot c --bootdisk scsi0
-qm set $VMID --ide2 local-lvm:cloudinit
+qm set $VMID --ide2 local:cloudinit
 qm set $VMID --serial0 socket --vga serial0
 qm set $VMID --agent enabled=1
 
