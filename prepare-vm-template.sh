@@ -6,6 +6,9 @@ while [[ "$#" -gt 0 ]]; do
         --vmid) VMID="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
+    case $3 in
+        --storage) STORAGE="$4"; shift ;;
+        *) echo "Unknown parameter passed: $3"; exit 1 ;;
     shift
 done
 
@@ -13,7 +16,10 @@ if [[ -z $VMID ]]; then
     echo "VMID is required. Please provide a valid VMID using the --vmid option."
     exit 1
 fi
-
+if [[ -z $STORAGE ]]; then
+    echo "STORAGE parameter is required. Please provide a valid STORAGE name using the --storage option."
+    exit 1
+fi
 
 # Fetch a cloud-init image of Ubuntu
 wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
@@ -28,10 +34,10 @@ virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
 # Create a base VM with the right config for you
 # Lable it with a unique and high ID so that the template doesn't show up on the top of your list
 qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
-qm importdisk $VMID focal-server-cloudimg-amd64.img local-lvm
-qm set $VMID --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-$VMID-disk-0
+qm importdisk $VMID focal-server-cloudimg-amd64.img $STORAGE
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 $STORAGE:vm-$VMID-disk-0
 qm set $VMID --boot c --bootdisk scsi0
-qm set $VMID --ide2 local-lvm:cloudinit
+qm set $VMID --ide2 $STORAGE:cloudinit
 qm set $VMID --serial0 socket --vga serial0
 qm set $VMID --agent enabled=1
 
