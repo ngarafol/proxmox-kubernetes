@@ -9,6 +9,7 @@ while [[ "$#" -gt 0 ]]; do
     case $3 in
         --storage) STORAGE="$4"; shift ;;
         *) echo "Unknown parameter passed: $3"; exit 1 ;;
+    esac
     shift
 done
 
