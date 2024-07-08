@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "2.9.14"
+      version = "3.0.1-rc3"
     }
   }
 }
@@ -32,12 +32,16 @@ resource "proxmox_vm_qemu" "kube-server" {
   scsihw      = "virtio-scsi-pci"
   bootdisk    = "scsi0"
 
-  disk {
-    slot     = 0
-    size     = "32G"
-    type     = "scsi"
-    storage  = var.file_system == "zfs" ? "local-zfs" : "local-lvm"
-    iothread = 0
+  disks {
+    scsi {
+      scsi0 {
+        disk {
+          size     = "32G"
+          storage  = var.storage_name
+          iothread = false
+        }
+      }
+    }
   }
 
   network {
@@ -80,12 +84,16 @@ resource "proxmox_vm_qemu" "kube-agent" {
   scsihw      = "virtio-scsi-pci"
   bootdisk    = "scsi0"
 
-  disk {
-    slot     = 0
-    size     = "16G"
-    type     = "scsi"
-    storage  = var.file_system == "zfs" ? "local-zfs" : "local-lvm"
-    iothread = 0
+  disks {
+    scsi {
+      scsi0 {
+        disk {
+          size     = "16G"
+          storage  = var.storage_name
+          iothread = false
+        }
+      }
+    }
   }
 
   network {

@@ -60,4 +60,8 @@ variable "ip_net_agent" {
 }
 
 
+variable "storage_name" {
+  description = "Storage to be used"
+  type        = string
+}
 
