@@ -16,19 +16,20 @@ fi
 
 
 # Fetch a cloud-init image of Ubuntu
-wget -c https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+wget -c https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 
 # If you have multiple nodes and run a proxmox cluster, try and run this on the node with the maximum storage
 # If you are not on a proxmox subscription, disable any enterprise repos( https://enterprise.proxmox.com/**) before running this script
 # The enterprise repos can be disabled by clicking on the node name (For e.g. 'pve') and going into the 'Repositories' sections
 apt update -y
 apt install libguestfs-tools -y
-virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
+virt-customize -a jammy-server-cloudimg-amd64.img --install qemu-guest-agent
+virt-customize -a jammy-server-cloudimg-amd64.img --root-password password:trledrle123
 
 # Create a base VM with the right config for you
 # Lable it with a unique and high ID so that the template doesn't show up on the top of your list
 qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
-qm importdisk $VMID focal-server-cloudimg-amd64.img iso-template
+qm importdisk $VMID jammy-server-cloudimg-amd64.img iso-template
 qm set $VMID --scsihw virtio-scsi-pci --scsi0 iso-template:$VMID/vm-$VMID-disk-0.raw
 qm set $VMID --boot c --bootdisk scsi0
 qm set $VMID --ide2 proxmox-shared:cloudinit
