@@ -33,6 +33,13 @@ resource "proxmox_vm_qemu" "kube-server" {
   bootdisk    = "scsi0"
 
   disks {
+    ide {
+      ide2 {
+        cloudinit {
+          storage = "local"
+        }
+      }
+    }
     scsi {
       scsi0 {
         disk {
@@ -85,6 +92,13 @@ resource "proxmox_vm_qemu" "kube-agent" {
   bootdisk    = "scsi0"
 
   disks {
+    ide {
+      ide2 {
+        cloudinit {
+          storage = "local"
+        }
+      }
+    }
     scsi {
       scsi0 {
         disk {
