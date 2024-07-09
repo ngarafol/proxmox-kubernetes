@@ -31,7 +31,7 @@ qm create $VMID --name "ubuntu-2204-template" --memory 2048 --cores 2 --net0 vir
 qm importdisk $VMID jammy-server-cloudimg-amd64.img iso-template
 qm set $VMID --scsihw virtio-scsi-pci --scsi0 iso-template:$VMID/vm-$VMID-disk-0.raw
 qm set $VMID --ide2 proxmox-shared:cloudinit
-qm set $VMID --boot order=ide2;scsi0
+qm set $VMID --boot order="ide2;scsi0"
 qm set $VMID --serial0 socket --vga serial0
 qm set $VMID --agent enabled=1
 
