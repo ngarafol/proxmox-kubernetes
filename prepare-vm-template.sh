@@ -23,8 +23,7 @@ wget -c https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd6
 # The enterprise repos can be disabled by clicking on the node name (For e.g. 'pve') and going into the 'Repositories' sections
 apt update -y
 apt install libguestfs-tools -y
-virt-customize -a jammy-server-cloudimg-amd64.img --install qemu-guest-agent
-virt-customize -a jammy-server-cloudimg-amd64.img --root-password password:trledrle123
+virt-customize -a jammy-server-cloudimg-amd64.img --install qemu-guest-agent --root-password password:trledrle123 --truncate /etc/machine-id --run-command 'dpkg-reconfigure openssh-server'
 
 # Create a base VM with the right config for you
 # Lable it with a unique and high ID so that the template doesn't show up on the top of your list
